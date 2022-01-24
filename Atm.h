@@ -1,18 +1,26 @@
 #ifndef ATM_H
 #define ATM_H
-
+#include<iostream>
 using namespace std;
 class Atm {
 private:
-    int amount;
-    int cardNum;
+    //money
+    double balance;
+    double withdrawAmount, depositAmount;
+    //other
+    char *cardNum;
+    int option;
 public:
     //constructors
     Atm();                              //------
+    //generators
+//    void cardNumGenerator(char);
     //printer
     void menu();
     void accMenu();
     //getter
+    void withdraw(double);
+    void deposit(double);
 
 
     //setter
