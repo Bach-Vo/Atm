@@ -9,12 +9,12 @@ private:
     double withdrawAmount, depositAmount;
     //other
     char *cardNum;
-    int option;
+    
 public:
     //constructors
     Atm();                              //------
     //generators
-//    void cardNumGenerator(char);
+    void cardNumGenerator(char *cardN);
     //printer
     void menu();
     void accMenu();
@@ -24,7 +24,7 @@ public:
 
 
     //setter
-    void userOption();                 
+    void userMenuOption();                 
     
 };
 #endif

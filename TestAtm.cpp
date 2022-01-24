@@ -4,7 +4,7 @@ using namespace std;
 /*              ********* INSTRUCTION       !!!
 */
 void menu();
-void userOption();
+void userMenuOption();
 //callees
 void accMenu();
 void withdraw();
@@ -14,7 +14,6 @@ void cardNumGenerator(char *cardNum);
 int main(){
     Atm atm1;
     atm1.menu();
-    atm1.userOption();
     
 
 

@@ -1,1 +1,1 @@
-cd "c:\Codin\Git\ATM\" ; if ($?) { g++ TestAtm.cpp Atm.cpp -o TestAtm } ; if ($?) { .\TestAtm }
+40
