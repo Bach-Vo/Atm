@@ -19,12 +19,11 @@ public:
     void menu();
     void accMenu();
     //getter
-    void withdraw(double);
-    void deposit(double);
+    void withdraw();
+    void deposit();
 
 
-    //setter
-    void userMenuOption();                 
+    //setter                 
     
 };
 #endif

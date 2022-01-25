@@ -4,7 +4,7 @@
 using namespace std;
 
 
-/*
+
 // Dungeons Game
 // A Win32 Console based pseudo-RPG
 

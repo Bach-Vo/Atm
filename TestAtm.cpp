@@ -4,7 +4,6 @@ using namespace std;
 /*              ********* INSTRUCTION       !!!
 */
 void menu();
-void userMenuOption();
 //callees
 void accMenu();
 void withdraw();
