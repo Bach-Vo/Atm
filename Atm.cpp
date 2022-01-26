@@ -1,6 +1,8 @@
 #include "Atm.h"
 #include <iostream>
 #include <ctime>
+#include <cstring>
+#include <string>
 using namespace std;
 
 Atm::Atm(){
@@ -44,7 +46,34 @@ void Atm::cardNumGenerator(char *cardN){
         cout << "cardN: " << cardN<< endl;
 }
 //Validators
+bool Atm::cardValidator(const char *cardN){
+    int size = strlen(cardN);
+    char array[size];
+    int total =0;
+    int sum =0, tt = 0, tempSum =0;
+    for (int i = 0; i < size; i++)//copy to a dummy arr
+    {
+        array[i] = cardN[i];
+    }
 
+    //Use Luhn algorithm to check
+    for (int i = size-2; i >= 0 ; i-=2)
+    {
+        sum = (array[i] - '0') *2;
+        if (sum >= 10){
+            array[i] = ((sum/10)+(sum%10) +'0');
+        }
+        else
+            array[i] = sum + '0';
+    }
+    for (int i = 0; i < size; i++)
+    {
+        total += array[i] - '0';
+    }
+    if (tt %10 == 0)
+        return true;
+    return false;
+}
 //setters
 void Atm::withdraw(){
     int option;
@@ -136,6 +165,7 @@ void Atm::accMenu(){
     cout << "Manage Accounts" << '\n';
     cout << "1) <- BACK" << '\n';
     cout << "2) Sign out" << '\n';
+    //User Options
     int option;
     cout << "Enter your option: ";  
     cin >> option;
