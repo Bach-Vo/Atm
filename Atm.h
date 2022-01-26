@@ -2,6 +2,7 @@
 #define ATM_H
 #include<iostream>
 #include<string>
+
 using namespace std;
 class Atm {
 private:
@@ -17,6 +18,8 @@ public:
     Atm();                              //------
     //generators
     void cardNumGenerator(char *cardN);
+    //validators
+    bool cardValidator(const char *cardN);
     //printer
     void menu();
     void accMenu();
