@@ -1,6 +1,7 @@
 #ifndef ATM_H
 #define ATM_H
 #include<iostream>
+#include<string>
 using namespace std;
 class Atm {
 private:
@@ -9,7 +10,8 @@ private:
     double withdrawAmount, depositAmount;
     //other
     char *cardNum;
-    
+    string cardBrand;
+
 public:
     //constructors
     Atm();                              //------
@@ -21,8 +23,6 @@ public:
     //getter
     void withdraw();
     void deposit();
-
-
     //setter                 
     
 };

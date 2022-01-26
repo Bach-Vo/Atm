@@ -13,23 +13,27 @@ void Atm::cardNumGenerator(char *cardN){
     srand(time(0));
 
     //leading digit
-    switch (rand()%3)
+    switch (rand()%5)
     {
     case 1:
         cardN[0] = 4 + '0';
-        //cardType = "Visa";
+        cardBrand = "Visa";
         break;
     case 2:
         cardN[0] = 5 + '0';
-        //cardType = "some";
+        cardBrand = "Mastercard";
         break;
     case 3:
-        cardN[0] = 1 + '0';
-        //cardType = "sum else";
+        cardN[0] = 6 + '0';
+        cardBrand = "Discover";
         break;
-    default:
-        cardN[0] = 0 + '0';
-        //cardType = "Unknown";
+    case 4:
+        cardN[0] = 3 + '0';
+        cardBrand = "American Express";
+        break;
+    case 5:
+        cardN[0] = 8 + '0';
+        cardBrand = "Voyager";
         break;
     }
     //the rest
@@ -39,6 +43,8 @@ void Atm::cardNumGenerator(char *cardN){
     }
         cout << "cardN: " << cardN<< endl;
 }
+//Validators
+
 //setters
 void Atm::withdraw(){
     int option;
@@ -123,7 +129,7 @@ void Atm::menu(){
 void Atm::accMenu(){
     system("cls");
     cout << "\n*********** My Accounts ***********"<< '\n'<<'\n';
-    cout << "Card #" << cardNum << '\n';
+    cout << "Card #" << cardNum << "\tBrand: " << cardBrand << '\n';
     cout << "Balance: $" << balance << '\n';
     cout << "\tHistory: " << '\n';
     cout << endl;
