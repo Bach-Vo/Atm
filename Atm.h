@@ -8,9 +8,12 @@ class Atm {
 private:
     //money
     double balance;
-    double withdrawAmount, depositAmount;
+    double withdrawAmount; double depositAmount;
+    double transferAmount;
     //other
     char *cardNum;
+    char *transferCardNum;
+    char *transferMes;
     string cardBrand;
     string exceptionMes;
 
@@ -21,12 +24,15 @@ public:
     void cardNumGenerator(char *cardN);
     //validators
     bool cardValidator(const char *cardN);
-    //printer
+    //Display
     void menu();
     void accMenu();
+    void transferMenu();
     //getter
+    //features
     void withdraw();
     void deposit();
+    bool transfer(char *transferCardNum, double &transferAmount);
     //setter                 
     
 };

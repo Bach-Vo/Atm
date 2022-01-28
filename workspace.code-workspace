@@ -38,7 +38,9 @@
 	"settings": {
 		"files.associations": {
 			"iostream": "cpp",
-			"ostream": "cpp"
+			"ostream": "cpp",
+			"istream": "cpp",
+			"*.tcc": "cpp"
 		}
 	}
 }

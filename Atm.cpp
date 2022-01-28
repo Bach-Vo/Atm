@@ -1,10 +1,10 @@
 #include "Atm.h"
 #include <iostream>
-#include <ctime>
+#include <ctime>            //srand(time())
 #include <cstring>
 #include <string>
 #include <stdexcept>
-#include <windows.h>
+#include <windows.h>        //Sleep()
 using namespace std;
 
 Atm::Atm(){
@@ -49,8 +49,12 @@ void Atm::cardNumGenerator(char *cardN){
 bool Atm::cardValidator(const char *cardN){
     int sum =0, total = 0;
 
-    //Copy original arr into a dummy arr
     int size = strlen(cardN);
+    if (size > 16)
+    {
+        return false;// throw ex
+    }
+    //Copy original arr into a dummy arr
     char array[size];
     for (int i = 0; i < size; i++)
         array[i] = cardN[i];
@@ -202,13 +206,13 @@ void Atm::deposit(){
 void Atm::menu(){
     //system("cls");
     cout << "\n************** WELCOME TO ATM ************** "<< '\n'<<'\n';
-    cout << "1)     My Accounts" << '\n';
+    cout << "1)     My Accounts" << '\n';//Delete [] cardNum
     cout << "2)     Transfer" << '\n';
     cout << "3)     Withdraw" << '\n';
     cout << "4)     Deposits" << '\n';
     cout << "5)     Sign out" << '\n';
     cout << "**********************************************" << endl;
-    int option;
+    int option = 0;
     cout << "\nEnter your option: ";
     cin >> option;
     
@@ -219,6 +223,7 @@ void Atm::menu(){
         break;
     case 2:
         cout << "Transfer" << '\n';
+        transferMenu();
         break;
     case 3:
         cout << "\tWithdraw" << '\n';
@@ -239,8 +244,7 @@ void Atm::menu(){
         cout << "Signed out successfully";
         break;
     default:
-        cout << "Returning to Main Menu...";
-        menu();
+        cout << "Exit.";
         break;
     }//switch
        //should merge into 1 function or seperate between display & option functions
@@ -264,7 +268,59 @@ void Atm::accMenu(){
             menu(); break;
         case 2:
             break;
+        default:
+        cout << "Returning to Main Menu...";
+        menu();
+        break;
     }
+}
+void Atm::transferMenu()
+{
+    transferCardNum = new char [16];
+    transferMes = new char [100];
+    //  input
+    cout << "Card #" ;
+    cin >> transferCardNum;
+    cout << "(optional)[100 char]\nMessage: ";
+    cin.get(transferMes, 100, '\n');
+    cout<< transferMes;
+    //***** Not waiting for input
+    double tempTransferAmount = 0;
+    if(false/*transfer(transferCardNum, tempTransferAmount)*/)
+    {
+        cout << "\n\t\tCard #" << cardNum << endl;
+        cout << "Has transfered successfully to card #"<<transferCardNum << endl;
+        cout << "Amount: $" << tempTransferAmount << endl;
+        cout << "Message: " << transferMes << endl;
+    }
+    else    
+    {
+        cout << "Request transfer denied";
+        //Provide reason, throw ex
+        //menu(); return;
+    }
+    delete [] transferCardNum;
+    delete [] transferMes;
+}
+bool Atm::transfer(char *transferCardNum, double& transferAmount)
+{
+    if(!cardValidator(transferCardNum)){
+        cout << "Card is not valid";
+        transferMenu();
+        return false;
+    }
+    //Card is valid
+    cout << "Enter Amount: $";
+    cin >> transferAmount;
+    if (transferAmount < balance)
+    {
+        cout << "Not enough money to transfer";
+        transfer(transferCardNum, transferAmount);//how to bypass cardValidator()
+        return false;
+    }
+    //Enough money
+    balance -= transferAmount;
+return true;
 }
 
 
