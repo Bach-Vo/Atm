@@ -4,6 +4,7 @@
 #include <cstring>
 #include <string>
 #include <stdexcept>
+#include <windows.h>
 using namespace std;
 
 Atm::Atm(){
@@ -43,7 +44,6 @@ void Atm::cardNumGenerator(char *cardN){
     {
         cardN[i] = (rand() %9) + '0' ;
     }
-        cout << "cardN: " << cardN<< endl;
 }
 //Validators
 bool Atm::cardValidator(const char *cardN){
@@ -86,7 +86,7 @@ Then, check balance again to decide asking "Continue withdrawing"
 */  
     //Check if neg balance
     if (balance <= 0){
-            cout << "You're broke !!!   Current balance: "<< balance << endl;
+            cout << "You're broke!\tCurrent balance: $"<< balance << endl;
         cout << "1) Main menu\t\t2) Exit" << endl;
         cin >> option;
             if (option == 1){   menu(); return;}
@@ -96,21 +96,20 @@ Then, check balance again to decide asking "Continue withdrawing"
     //ask for withdrawAmount
 cout << "Withdraw Amount: $";
 cin >> withdrawAmount;
-        //Check on a dummy BalanceA
-int tempBalance = balance - withdrawAmount;
+
     //Positive balance
-    if (withdrawAmount < tempBalance)
+    if (withdrawAmount < balance)
     {
         balance -= withdrawAmount;  //for real  ;)
-        cout << "Current balance: " << balance << endl;//New balance amount
-        cout << "1) Continue withdraw\t2) Main menu\t3) Exit" << endl;
+        cout << "Current balance: $" << balance << endl;//New balance amount
+        cout << "1) Continue withdraw\t2) Main menu\t3) Exit\n>" << endl;
         cin >> option;
         if(option == 1){ withdraw(); return; }
         else if(option == 2){ menu(); return; }
         else return;
     }
     //Within an acceptable threshold
-    else if(withdrawAmount < tempBalance +10){
+    else if(withdrawAmount < balance +10){
         cout << "Getting out of money, balance cannot reach over $-10" << endl <<
         "1) Continue to withdraw" << endl <<
         "2) Enter a smaller amount" << endl <<
@@ -118,7 +117,7 @@ int tempBalance = balance - withdrawAmount;
         cin >> option;
         if(option == 1){
             balance -= withdrawAmount;
-            cout << "Current balance: " << endl;//New balance amount
+            cout << "Current balance: $" << balance << endl;//New balance amount
             cout << "1) Main menu\t2)Exit";
             option = 0;     //reset "option"
             cin >> option;
@@ -133,7 +132,8 @@ int tempBalance = balance - withdrawAmount;
         else    return;
     }
     //Neg balance
-    else if(withdrawAmount > tempBalance +10){
+    else// if(withdrawAmount > (tempBalance +10))
+    {
         //ask to pick different amount or exit 
         cout << "Not enough money!" << endl << 
         "Press (1) to enter a smaller amount" << endl << 
@@ -146,7 +146,8 @@ int tempBalance = balance - withdrawAmount;
         }
         else    return;
     }
-    else {cout<<"Error";}
+    //else {cout<<"Error";}
+    return;
 /*
         balance -= withdrawAmount;
     cout << "Current balance: $" << balance << '\n' << endl;
@@ -234,7 +235,8 @@ void Atm::menu(){
         break;
     case 5: 
         cout << "Signning out..." << '\n';
-        //system("pause>0");
+        Sleep(1200);
+        cout << "Signed out successfully";
         break;
     default:
         cout << "Returning to Main Menu...";
@@ -244,7 +246,7 @@ void Atm::menu(){
        //should merge into 1 function or seperate between display & option functions
 }
 void Atm::accMenu(){
-    system("cls");
+    //system("cls");
     cout << "\n*********** My Accounts ***********"<< '\n'<<'\n';
     cout << "Card #" << cardNum << "\tBrand: " << cardBrand << '\n';
     cout << "Balance: $" << balance << '\n';
