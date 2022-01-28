@@ -3,6 +3,7 @@
 #include <ctime>
 #include <cstring>
 #include <string>
+#include <stdexcept>
 using namespace std;
 
 Atm::Atm(){
@@ -13,9 +14,8 @@ Atm::Atm(){
 //generators
 void Atm::cardNumGenerator(char *cardN){
     srand(time(0));
-
     //leading digit
-    switch (rand()%5)
+    switch (rand()%5 +1)
     {
     case 1:
         cardN[0] = 4 + '0';
@@ -47,14 +47,13 @@ void Atm::cardNumGenerator(char *cardN){
 }
 //Validators
 bool Atm::cardValidator(const char *cardN){
+    int sum =0, total = 0;
+
+    //Copy original arr into a dummy arr
     int size = strlen(cardN);
     char array[size];
-    int total =0;
-    int sum =0, tt = 0, tempSum =0;
-    for (int i = 0; i < size; i++)//copy to a dummy arr
-    {
+    for (int i = 0; i < size; i++)
         array[i] = cardN[i];
-    }
 
     //Use Luhn algorithm to check
     for (int i = size-2; i >= 0 ; i-=2)
@@ -70,65 +69,149 @@ bool Atm::cardValidator(const char *cardN){
     {
         total += array[i] - '0';
     }
-    if (tt %10 == 0)
+    //if true: Valid | false: Invalid
+    if (total %10 == 0)
         return true;
     return false;
 }
 //setters
 void Atm::withdraw(){
     int option;
-        cout << "Withdraw Amount: $";
-        cin >> withdrawAmount;
-    balance -= withdrawAmount;
-        cout << "Current balance: $" << balance << endl;
-    if (balance >0)
-    {
-            cout << "1) Continue withdraw\t2) Main menu\t3) Exit" << endl;
-            cin >> option;
-            if (option == 1)     {    withdraw();}
-            else if (option == 2){    menu();}
-            else if (option == 3){/*exit*/}
+/***GOAL*** Before letting customers withdraw, check if they a have neg balance. 
+    If yes, Notify them and exit. 
+    If no, Let them withdraw
+Then, check balance again to decide asking "Continue withdrawing"
+    If (balance is in an acceptable threshold), Options to exist
+    If else, Options to Continue withdraw and Exits. 
+*/  
+    //Check if neg balance
+    if (balance <= 0){
+            cout << "You're broke !!!   Current balance: "<< balance << endl;
+        cout << "1) Main menu\t\t2) Exit" << endl;
+        cin >> option;
+            if (option == 1){   menu(); return;}
+            else if (option == 2){ /*exit*/ }
+        return;
     }
+    //ask for withdrawAmount
+cout << "Withdraw Amount: $";
+cin >> withdrawAmount;
+        //Check on a dummy BalanceA
+int tempBalance = balance - withdrawAmount;
+    //Positive balance
+    if (withdrawAmount < tempBalance)
+    {
+        balance -= withdrawAmount;  //for real  ;)
+        cout << "Current balance: " << balance << endl;//New balance amount
+        cout << "1) Continue withdraw\t2) Main menu\t3) Exit" << endl;
+        cin >> option;
+        if(option == 1){ withdraw(); return; }
+        else if(option == 2){ menu(); return; }
+        else return;
+    }
+    //Within an acceptable threshold
+    else if(withdrawAmount < tempBalance +10){
+        cout << "Getting out of money, balance cannot reach over $-10" << endl <<
+        "1) Continue to withdraw" << endl <<
+        "2) Enter a smaller amount" << endl <<
+        "Otherwise, press any other key to Exit..." << endl;
+        cin >> option;
+        if(option == 1){
+            balance -= withdrawAmount;
+            cout << "Current balance: " << endl;//New balance amount
+            cout << "1) Main menu\t2)Exit";
+            option = 0;     //reset "option"
+            cin >> option;
+            if(option == 1){ menu(); return; }
+            else if(option == 2){ return; }
+            //else     throw an exception
+        }
+        else if(option == 2){
+            withdraw();     //is this bad, func within func within func ???
+            return;
+        }
+        else    return;
+    }
+    //Neg balance
+    else if(withdrawAmount > tempBalance +10){
+        //ask to pick different amount or exit 
+        cout << "Not enough money!" << endl << 
+        "Press (1) to enter a smaller amount" << endl << 
+        "Otherwise, press any other key to Exit... " << endl;
+        cin >> option;
+        if (option == 1)
+        {
+            withdraw();
+            return;
+        }
+        else    return;
+    }
+    else {cout<<"Error";}
+/*
+        balance -= withdrawAmount;
+    cout << "Current balance: $" << balance << '\n' << endl;
+    //Not enough money but within a threshold (0 <-> -10)
+    if((balance < 10 && balance > 0) && withdrawAmount < 10)
+    {   
+            cout << "Not enough money";
+    }
+    //Positive balance
     else
     {
-        cout << "You're broke !!!" << endl;
-            cout << "1) Main menu\t\t2) Exit" << endl;
-            cin >> option;
-            if (option == 1){   menu();}
-            else if (option == 2){ /*exit*/ }
+        //
     }
+    //Check if eliable to "Continue withraw"
+        //balance is negative
+    if (balance == 0 && balance > -10)
+    {
+        cout << "1) Main menu\t\t2) Exit" << endl;
+        cin >> option;
+        if (option == 1){   menu();}
+        else if (option == 2){ /*exit }
+    }
+        //balance is positive
+    else if(balance > 0)
+    {
+        cout << "1) Continue withdraw\t2) Main menu\t3) Exit" << endl;
+        cin >> option;
+        if (option == 1)     {    withdraw();}
+        else if (option == 2){    menu();}
+        else if (option == 3){/*exit}
+    }*/
 }
 void Atm::deposit(){
         cout << "Deposit Amount: $";
         cin >> depositAmount;
     balance += depositAmount;
-    cout << "Current balance: $" << balance << endl;
+    cout << "Current balance: $" << balance <<'\n' << endl;
     cout << "1) Continue deposit\t2) Main menu\t3) Exit" << endl;
     int option;
     cin >> option;
-    if (option == 1)     {    deposit();    }
-    else if (option == 2){    menu();    }
-    else if (option == 3){/*exit*/}
-    //room for exceptions   
+    if (option == 1)     {    deposit();}
+    else if (option == 2){    menu();}
+    else if (option == 3){    return;}
+    //room for exceptions 
+    else{
+        exceptionMes = "Invalid option";
+        throw exceptionMes;
+    }  
 }
 
-//Printers
+//Display menus
 void Atm::menu(){
-    system("cls");
+    //system("cls");
     cout << "\n************** WELCOME TO ATM ************** "<< '\n'<<'\n';
     cout << "1)     My Accounts" << '\n';
     cout << "2)     Transfer" << '\n';
     cout << "3)     Withdraw" << '\n';
     cout << "4)     Deposits" << '\n';
     cout << "5)     Sign out" << '\n';
-    //cout << "*************************************************" << endl;
+    cout << "**********************************************" << endl;
     int option;
-
     cout << "\nEnter your option: ";
     cin >> option;
     
-    switch (option)
-    {
+    switch (option){
     case 1:
         cout << "My Accounts";
         accMenu();
@@ -142,15 +225,20 @@ void Atm::menu(){
         break;
     case 4:
         cout << "\tDeposits" << '\n';
-        deposit();
+        try{
+            deposit();
+        }catch(string &exceptionMes){   //return to Main menu if catch exc
+            cout << option << " is not a valid option";
+            menu();
+        }
         break;
     case 5: 
         cout << "Signning out..." << '\n';
         //system("pause>0");
         break;
     default:
-        cout << "\tOUTTTTT !!!!";
-        false;
+        cout << "Returning to Main Menu...";
+        menu();
         break;
     }//switch
        //should merge into 1 function or seperate between display & option functions

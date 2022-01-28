@@ -14,9 +14,6 @@ bool cardValidator(const char *cardN);
 int main(){
     Atm atm1;
     atm1.menu();
-    
-
-
 return 0;
 }
 

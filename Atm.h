@@ -12,6 +12,7 @@ private:
     //other
     char *cardNum;
     string cardBrand;
+    string exceptionMes;
 
 public:
     //constructors
