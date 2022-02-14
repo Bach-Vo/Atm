@@ -78,6 +78,8 @@ bool Atm::cardValidator(const char *cardN){
         return true;
     return false;
 }
+
+
 //setters
 void Atm::withdraw(){
     int option;
@@ -205,31 +207,42 @@ void Atm::deposit(){
 //Display menus
 void Atm::menu(){
     //system("cls");
-    cout << "\n************** WELCOME TO ATM ************** "<< '\n'<<'\n';
-    cout << "1)     My Accounts" << '\n';//Delete [] cardNum
+    cout << "\n************* WELCOME TO ATM ************* "<< '\n'<<'\n';
+    cout << "1)     My Account" << '\n';//Delete [] cardNum
     cout << "2)     Transfer" << '\n';
     cout << "3)     Withdraw" << '\n';
     cout << "4)     Deposits" << '\n';
     cout << "5)     Sign out" << '\n';
-    cout << "**********************************************" << endl;
-    int option = 0;
-    cout << "\nEnter your option: ";
+    cout << "\n******************************************" << endl;
+    char option = 0;
+    bool repromtFlag = false;
+
+    do
+{
+    cout << "Enter your option: ";
     cin >> option;
     
+    if (option < 49 && option > 53)   //Invalid option
+    {
+        option = 0; /*default case*/
+    }
+    
     switch (option){
-    case 1:
-        cout << "My Accounts";
+    case 49:    // 1
         accMenu();
         break;
-    case 2:
+        repromtFlag = false;
+    case 50:    //2
         cout << "Transfer" << '\n';
         transferMenu();
+        repromtFlag = false;
         break;
-    case 3:
+    case 51:    //3
         cout << "\tWithdraw" << '\n';
         withdraw();
+        repromtFlag = false;
         break;
-    case 4:
+    case 52:    //4
         cout << "\tDeposits" << '\n';
         try{
             deposit();
@@ -237,27 +250,32 @@ void Atm::menu(){
             cout << option << " is not a valid option";
             menu();
         }
+        repromtFlag = false;
         break;
-    case 5: 
+    case 53:    //5
         cout << "Signning out..." << '\n';
         Sleep(1200);
+        repromtFlag = false;
         cout << "Signed out successfully";
         break;
     default:
-        cout << "Exit.";
+        cout << "Invalid input. Please try again(1-5)" << endl;
+        repromtFlag = true;
         break;
-    }//switch
-       //should merge into 1 function or seperate between display & option functions
+    }
+} while(repromtFlag);//should merge into 1 function or seperate between display & option functions
 }
+
+
 void Atm::accMenu(){
-    //system("cls");
+    system("cls");
     cout << "\n*********** My Accounts ***********"<< '\n'<<'\n';
     cout << "Card #" << cardNum << "\tBrand: " << cardBrand << '\n';
     cout << "Balance: $" << balance << '\n';
-    cout << "\tHistory: " << '\n';
+    cout << "History: " << '\n';
     cout << endl;
     cout << "Manage Accounts" << '\n';
-    cout << "1) <- BACK" << '\n';
+    cout << "1) <- BACK" << '\t';
     cout << "2) Sign out" << '\n';
     //User Options
     int option;
@@ -274,48 +292,66 @@ void Atm::accMenu(){
         break;
     }
 }
+
+
 void Atm::transferMenu()
 {
     transferCardNum = new char [16];
     transferMes = new char [100];
+    
     //  input
-    cout << "Card #" ;
-    cin >> transferCardNum;
+    if(!flag)  //if !flag, bypass entering card# & validating card
+    {
+        cout << "Card #" ;
+        cin.ignore();
+        cin.getline(transferCardNum, 16);
+    }
+    //transferCardNum = {};   
+    
+    /* ***For faster debugging***
     cout << "(optional)[100 char]\nMessage: ";
-    cin.get(transferMes, 100, '\n');
-    cout<< transferMes;
-    //***** Not waiting for input
-    double tempTransferAmount = 0;
-    if(false/*transfer(transferCardNum, tempTransferAmount)*/)
+    cin.get(transferMes, 100, '\n'); */
+
+    transferAmount = 0;
+    if(transfer(transferCardNum, transferAmount))
     {
         cout << "\n\t\tCard #" << cardNum << endl;
-        cout << "Has transfered successfully to card #"<<transferCardNum << endl;
-        cout << "Amount: $" << tempTransferAmount << endl;
+        //cout << "Has transfered successfully to card #"<< transferCardNum[0] << endl;
+        cout << "Amount: $" << transferAmount << endl;
         cout << "Message: " << transferMes << endl;
     }
     else    
     {
-        cout << "Request transfer denied";
+        cout << "\nRequest transfer denied" << endl;
         //Provide reason, throw ex
         //menu(); return;
+        transferMenu();
     }
     delete [] transferCardNum;
     delete [] transferMes;
 }
+
+
 bool Atm::transfer(char *transferCardNum, double& transferAmount)
 {
+    if(!flag)
+    {
     if(!cardValidator(transferCardNum)){
-        cout << "Card is not valid";
-        transferMenu();
+        cout << "Card is not valid" << endl;
         return false;
+        }
     }
     //Card is valid
+    cin.ignore();
+    cin.clear();
+    cin.sync();
     cout << "Enter Amount: $";
     cin >> transferAmount;
-    if (transferAmount < balance)
+    if (transferAmount > balance)
     {
-        cout << "Not enough money to transfer";
-        transfer(transferCardNum, transferAmount);//how to bypass cardValidator()
+        cout << "\nNot enough money to transfer";
+        //transfer(transferCardNum, transferAmount);//how to bypass cardValidator()
+        flag = true;
         return false;
     }
     //Enough money

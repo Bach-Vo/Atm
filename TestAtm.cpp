@@ -3,13 +3,6 @@
 using namespace std;
 /*              ********* INSTRUCTION       !!!
 */
-void menu();
-//callees
-void accMenu();
-void withdraw();
-void deposit();
-void cardNumGenerator(char *cardNum);
-bool cardValidator(const char *cardN);
 
 int main(){
     Atm atm1;
