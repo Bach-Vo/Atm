@@ -3,8 +3,9 @@
 #include <ctime>            //srand(time())
 #include <cstring>
 #include <string>
-#include <stdexcept>
+#include <stdexcept>        //exceptions
 #include <windows.h>        //Sleep()
+#include <limits>           //cin.ignore()
 using namespace std;
 
 Atm::Atm(){
@@ -12,10 +13,13 @@ Atm::Atm(){
     cardNum = new char [16];
     cardNumGenerator(cardNum);
 }
+
+
 //generators
 void Atm::cardNumGenerator(char *cardN){
     srand(time(0));
     //leading digit
+    //cardN[0] = rand()%5 +1;
     switch (rand()%5 +1)
     {
     case 1:
@@ -40,19 +44,21 @@ void Atm::cardNumGenerator(char *cardN){
         break;
     }
     //the rest
-    for (int i = 1; i < 15; i++)
+    for (int i = 1; i < 16; i++)
     {
         cardN[i] = (rand() %9) + '0' ;
     }
 }
+
+
 //Validators
 bool Atm::cardValidator(const char *cardN){
     int sum =0, total = 0;
 
     int size = strlen(cardN);
-    if (size > 16)
+    if (size > 3)
     {
-        return false;// throw ex
+        throw size;// throw ex
     }
     //Copy original arr into a dummy arr
     char array[size];
@@ -87,7 +93,7 @@ void Atm::withdraw(){
     If yes, Notify them and exit. 
     If no, Let them withdraw
 Then, check balance again to decide asking "Continue withdrawing"
-    If (balance is in an acceptable threshold), Options to exist
+    If (balance is in an acceptable threshold), Options to exit
     If else, Options to Continue withdraw and Exits. 
 */  
     //Check if neg balance
@@ -96,9 +102,10 @@ Then, check balance again to decide asking "Continue withdrawing"
         cout << "1) Main menu\t\t2) Exit" << endl;
         cin >> option;
             if (option == 1){   menu(); return;}
-            else if (option == 2){ /*exit*/ }
+            else if (option == 2){  }
         return;
     }
+
     //ask for withdrawAmount
 cout << "Withdraw Amount: $";
 cin >> withdrawAmount;
@@ -108,42 +115,54 @@ cin >> withdrawAmount;
     {
         balance -= withdrawAmount;  //for real  ;)
         cout << "Current balance: $" << balance << endl;//New balance amount
-        cout << "1) Continue withdraw\t2) Main menu\t3) Exit\n>" << endl;
+        cout << "1) Continue withdraw" << endl <<
+                "2) Main menu" << endl <<
+                "Otherwise, press any other key to Exit...\n>" << endl;
         cin >> option;
-        if(option == 1){ withdraw(); return; }
-        else if(option == 2){ menu(); return; }
+        if(option == 1)
+        { withdraw(); return; }
+        else if(option == 2)
+        { menu(); return; }
         else return;
     }
     //Within an acceptable threshold
-    else if(withdrawAmount < balance +10){
+    else if(withdrawAmount < balance +10)
+    {
         cout << "Getting out of money, balance cannot reach over $-10" << endl <<
-        "1) Continue to withdraw" << endl <<
-        "2) Enter a smaller amount" << endl <<
-        "Otherwise, press any other key to Exit..." << endl;
+                "1) Continue to withdraw" << endl <<
+                "2) Enter a smaller amount" << endl <<
+                "Otherwise, press any other key to Exit..." << endl;
         cin >> option;
-        if(option == 1){
+        if(option == 1)        //Conitinue to withdraw
+        {
             balance -= withdrawAmount;
             cout << "Current balance: $" << balance << endl;//New balance amount
-            cout << "1) Main menu\t2)Exit";
-            option = 0;     //reset "option"
+            cout << "Press (1) to enter a smaller amount" << endl << 
+                    "Otherwise, press any other key to Exit... " << endl;
+            option = 0;         //reset "option"
             cin >> option;
-            if(option == 1){ menu(); return; }
-            else if(option == 2){ return; }
-            //else     throw an exception
+            if(option == 1)
+            {
+                menu(); 
+                return; 
+            }
+            else    return; 
         }
-        else if(option == 2){
-            withdraw();     //is this bad, func within func within func ???
+        else if(option == 2)    //Enter a smaller amount
+        {
+            withdraw();
             return;
         }
-        else    return;
+        else    return;         //Exit
     }
+    
     //Neg balance
     else// if(withdrawAmount > (tempBalance +10))
     {
         //ask to pick different amount or exit 
         cout << "Not enough money!" << endl << 
-        "Press (1) to enter a smaller amount" << endl << 
-        "Otherwise, press any other key to Exit... " << endl;
+                "Press (1) to enter a smaller amount" << endl << 
+                "Otherwise, press any other key to Exit... " << endl;
         cin >> option;
         if (option == 1)
         {
@@ -186,6 +205,7 @@ cin >> withdrawAmount;
         else if (option == 3){/*exit}
     }*/
 }
+
 void Atm::deposit(){
         cout << "Deposit Amount: $";
         cin >> depositAmount;
@@ -268,7 +288,7 @@ void Atm::menu(){
 
 
 void Atm::accMenu(){
-    system("cls");
+    //system("cls");
     cout << "\n*********** My Accounts ***********"<< '\n'<<'\n';
     cout << "Card #" << cardNum << "\tBrand: " << cardBrand << '\n';
     cout << "Balance: $" << balance << '\n';
@@ -293,71 +313,84 @@ void Atm::accMenu(){
     }
 }
 
-
+/*      Input: transferCardNum; transferMes; call transfer();      */
 void Atm::transferMenu()
 {
     transferCardNum = new char [16];
     transferMes = new char [100];
-    
     //  input
-    if(!flag)  //if !flag, bypass entering card# & validating card
+    bool flag = false;
+    do  //if !flag, bypass entering card# & validating card
     {
         cout << "Card #" ;
-        cin.ignore();
         cin.getline(transferCardNum, 16);
-    }
-    //transferCardNum = {};   
+        try
+        {
+            if(cardValidator(transferCardNum))
+            {
+//transfer
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                cin.clear();
+                cin.sync();
+
+                cout << "Enter Amount: $";      cin >> transferAmount;
+                if (transferAmount > balance)
+                {
+                    cout << "\nNot enough money to transfer";
+                    flag = true;
+                }
+                //Enough money
+                else
+                    balance -= transferAmount;
+            }
+            else
+            {
+                cout << "Card is not valid" << endl;
+                flag = true;
+            }
+        }
+        catch(int size)
+        {
+            cout << "Your card has " << size << " digits" << endl;
+            cout << "Card should have 13-16 digits" << endl;
+            flag = true;
+        }
+
+
+        cout << "Press (1) to enter a valid card number. \nOtherwise press any other key to exit.";
+        int option;
+        cin >> option;
+        if (option != 1)
+        {
+            menu();
+        }
+    } while(flag);
+
     
     /* ***For faster debugging***
     cout << "(optional)[100 char]\nMessage: ";
     cin.get(transferMes, 100, '\n'); */
 
-    transferAmount = 0;
-    if(transfer(transferCardNum, transferAmount))
-    {
-        cout << "\n\t\tCard #" << cardNum << endl;
+    //if(transfer(transferCardNum, transferAmount))
+    
+        cout << "\n\t\t\tCard #" << transferCardNum << endl;
+        cout << "\nCard #" << cardNum << endl;
         //cout << "Has transfered successfully to card #"<< transferCardNum[0] << endl;
         cout << "Amount: $" << transferAmount << endl;
-        cout << "Message: " << transferMes << endl;
-    }
-    else    
-    {
+        //cout << "Message: " << transferMes << endl;
+//              ************************************************
         cout << "\nRequest transfer denied" << endl;
         //Provide reason, throw ex
         //menu(); return;
-        transferMenu();
-    }
-    delete [] transferCardNum;
-    delete [] transferMes;
+        
+        /* cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        cin.sync(); */
+
+    delete [] transferCardNum;  delete [] transferMes;
+    transferCardNum = nullptr; transferMes = nullptr;
 }
 
-
-bool Atm::transfer(char *transferCardNum, double& transferAmount)
-{
-    if(!flag)
-    {
-    if(!cardValidator(transferCardNum)){
-        cout << "Card is not valid" << endl;
-        return false;
-        }
-    }
-    //Card is valid
-    cin.ignore();
-    cin.clear();
-    cin.sync();
-    cout << "Enter Amount: $";
-    cin >> transferAmount;
-    if (transferAmount > balance)
-    {
-        cout << "\nNot enough money to transfer";
-        //transfer(transferCardNum, transferAmount);//how to bypass cardValidator()
-        flag = true;
-        return false;
-    }
-    //Enough money
-    balance -= transferAmount;
-return true;
-}
 
 
 

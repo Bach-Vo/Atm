@@ -16,7 +16,6 @@ private:
     char *transferMes;
     string cardBrand;
     string exceptionMes;
-    bool flag;
 
 public:
     //constructors
